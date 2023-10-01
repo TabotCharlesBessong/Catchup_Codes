@@ -5,8 +5,10 @@ import OTPField from "@ui/OTPField";
 import { FC } from "react";
 import { Keyboard, StyleSheet, TextInput, View } from "react-native";
 import React = require("react");
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { AuthStackParamList } from "src/@types/navigation";
 
-interface Props {}
+type Props = NativeStackScreenProps<AuthStackParamList,"Verification">
 
 const otpFields = new Array(6).fill("");
 
@@ -14,6 +16,8 @@ const Verification: FC<Props> = (props) => {
   const [otp, setOtp] = React.useState([...otpFields]);
   const [otpIndex, setOtpIndex] = React.useState(0);
   const inputRef = React.useRef<TextInput>(null);
+
+  console.log(props.route.params.userInfo)
   inputRef.current?.focus;
 
   const handleChange = (value:string,index:number) => {
