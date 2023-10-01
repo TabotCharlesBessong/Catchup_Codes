@@ -1,0 +1,15 @@
+{
+  "extends": "./node_modules/@tsconfig/react-native/tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react",
+    "baseUrl": ".",
+    "outDir": "./dist",
+    "paths": {
+      "@components/*": ["src/components/*"],
+      "@utils/*": ["src/utils/*"],
+      "@views/*": ["src/views/*"],
+      "@ui/*": ["src/ui/*"],
+      "src/*": ["src/*"]
+    }
+  }
+}
