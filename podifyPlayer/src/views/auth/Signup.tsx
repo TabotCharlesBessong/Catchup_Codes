@@ -12,6 +12,7 @@ import { AuthStackParamList } from "src/@types/navigation";
 import * as yup from "yup";
 import React = require("react");
 import axios from "axios";
+import client from "src/api/client";
 
 const signupSchema = yup.object({
   name: yup
@@ -60,10 +61,10 @@ const SignUp: FC<Props> = (props) => {
     // send the information to the api
     // fetch()
     try {
-      const responsne = await axios.post("http://192.168.100.37:5000/auth/create", {
+      const {data} = await client.post("/auth/create", {
         ...values,
       });
-      console.log(responsne);
+      console.log(data);
       navigation.navigate("Signin");
     } catch (error) {
       console.log("Signup error", error);
