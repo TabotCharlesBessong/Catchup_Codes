@@ -38,7 +38,7 @@ const signupSchema = yup.object({
 
 interface Props {}
 
-interface NewUser {
+export interface NewUser {
   name: string;
   email: string;
   password: string;
@@ -65,7 +65,9 @@ const SignUp: FC<Props> = (props) => {
         ...values,
       });
       console.log(data);
-      navigation.navigate("Signin");
+      navigation.navigate("Verification", {
+        userInfo: data.user,
+      });
     } catch (error) {
       console.log("Signup error", error);
     }

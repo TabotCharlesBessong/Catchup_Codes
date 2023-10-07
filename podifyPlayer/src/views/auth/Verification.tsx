@@ -5,42 +5,66 @@ import OTPField from "@ui/OTPField";
 import { FC } from "react";
 import { Keyboard, StyleSheet, TextInput, View } from "react-native";
 import React = require("react");
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { AuthStackParamList } from "src/@types/navigation";
+import client from "src/api/client";
 
-interface Props {}
+type Props = NativeStackScreenProps<AuthStackParamList, "Verification">;
 
 const otpFields = new Array(6).fill("");
 
-const Verification: FC<Props> = (props) => {
+const Verification: FC<Props> = ({ route,navigation }) => {
   const [otp, setOtp] = React.useState([...otpFields]);
   const [otpIndex, setOtpIndex] = React.useState(0);
   const inputRef = React.useRef<TextInput>(null);
+
+  const { userInfo } = route.params;
   inputRef.current?.focus;
 
-  const handleChange = (value:string,index:number) => {
-    const newOtp = [...otp]
-    if(value === 'Backspace'){
+  const handleChange = (value: string, index: number) => {
+    const newOtp = [...otp];
+    if (value === "Backspace") {
       // move to the previous
-      if(!newOtp[index]) setOtpIndex(index - 1)
-      newOtp[index] = ''
-    }else{
+      if (!newOtp[index]) setOtpIndex(index - 1);
+      newOtp[index] = "";
+    } else {
       // update otp and move further
-      setOtpIndex(index + 1)
-      newOtp[index] = value
+      setOtpIndex(index + 1);
+      newOtp[index] = value;
     }
-    setOtp([...newOtp])
-  }
+    setOtp([...newOtp]);
+  };
 
-  const handlePaste = (value:string) => {
-    if(value.length === 6){
-      Keyboard.dismiss()
-      const newOtp = value.split('')
-      setOtp([...newOtp])
+  const handlePaste = (value: string) => {
+    if (value.length === 6) {
+      Keyboard.dismiss();
+      const newOtp = value.split("");
+      setOtp([...newOtp]);
     }
-  }
+  };
+
+  const isValidOtp = otp.every((value) => {
+    return value.trim();
+  });
+
+  const handleSubmit = async () => {
+    if (!isValidOtp) return;
+
+    try {
+      const {data} = await client.post("/auth/verify-email", {
+        userId: userInfo.id,
+        token: otp.join(""),
+      });
+      console.log(data);
+      navigation.navigate("Signin")
+    } catch (error) {
+      console.log(error,"Verification error");
+    }
+  };
 
   React.useEffect(() => {
-    inputRef.current?.focus()
-  },[otpIndex])
+    inputRef.current?.focus();
+  }, [otpIndex]);
   return (
     <AuthFormContainer
       heading="Please check your email"
@@ -52,14 +76,14 @@ const Verification: FC<Props> = (props) => {
                 ref={otpIndex === index ? inputRef : null}
                 key={index}
                 onKeyPress={({ nativeEvent }) => {
-                  handleChange(nativeEvent.key,index);
+                  handleChange(nativeEvent.key, index);
                 }}
                 onChangeText={handlePaste}
-                value={otp[index] || ''}
+                value={otp[index] || ""}
               />
             ))}
           </View>
-          <AppButton title="Verify Account" />
+          <AppButton onPress={handleSubmit} title="Verify Account" />
           <View style={styles.linkContainer}>
             <AppLink title="resend otp" />
           </View>
