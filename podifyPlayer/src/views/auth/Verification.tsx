@@ -13,10 +13,11 @@ type Props = NativeStackScreenProps<AuthStackParamList, "Verification">;
 
 const otpFields = new Array(6).fill("");
 
-const Verification: FC<Props> = ({ route,navigation }) => {
+const Verification: FC<Props> = ({ route, navigation }) => {
   const [otp, setOtp] = React.useState([...otpFields]);
   const [otpIndex, setOtpIndex] = React.useState(0);
   const inputRef = React.useRef<TextInput>(null);
+  const [isSubmitting, setIsSubmitting] = React.useState(false)
 
   const { userInfo } = route.params;
   inputRef.current?.focus;
@@ -50,16 +51,18 @@ const Verification: FC<Props> = ({ route,navigation }) => {
   const handleSubmit = async () => {
     if (!isValidOtp) return;
 
+    setIsSubmitting(true)
     try {
-      const {data} = await client.post("/auth/verify-email", {
+      const { data } = await client.post("/auth/verify-email", {
         userId: userInfo.id,
         token: otp.join(""),
       });
       console.log(data);
-      navigation.navigate("Signin")
+      navigation.navigate("Signin");
     } catch (error) {
-      console.log(error,"Verification error");
+      console.log(error, "Verification error");
     }
+    setIsSubmitting(false)
   };
 
   React.useEffect(() => {
@@ -83,7 +86,7 @@ const Verification: FC<Props> = ({ route,navigation }) => {
               />
             ))}
           </View>
-          <AppButton onPress={handleSubmit} title="Verify Account" />
+          <AppButton busy={isSubmitting} onPress={handleSubmit} title="Verify Account" />
           <View style={styles.linkContainer}>
             <AppLink title="resend otp" />
           </View>

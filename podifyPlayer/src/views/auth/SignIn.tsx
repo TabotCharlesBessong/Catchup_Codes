@@ -44,6 +44,7 @@ const handleSubmit = async (
 ) => {
   // send the information to the api
   // fetch()
+  actions.setSubmitting(true)
   try {
     const { data } = await client.post("/auth/sign-in", {
       ...values,
@@ -55,6 +56,7 @@ const handleSubmit = async (
   } catch (error) {
     console.log("Signup error", error);
   }
+  actions.setSubmitting(false);
 };
 
 const SignIn: FC<Props> = (props) => {

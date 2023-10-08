@@ -60,6 +60,7 @@ const SignUp: FC<Props> = (props) => {
   ) => {
     // send the information to the api
     // fetch()
+    actions.setSubmitting(true)
     try {
       const {data} = await client.post("/auth/create", {
         ...values,
@@ -71,6 +72,7 @@ const SignUp: FC<Props> = (props) => {
     } catch (error) {
       console.log("Signup error", error);
     }
+    actions.setSubmitting(false)
   };
 
   return (
