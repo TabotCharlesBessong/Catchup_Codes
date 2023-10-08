@@ -12,6 +12,8 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "src/@types/navigation";
 import { FormikHelpers } from "formik";
 import client from "src/api/client";
+import { updateLoggedInState, updateProfile } from "src/store/auth";
+import { useDispatch } from "react-redux";
 
 const signupSchema = yup.object({
   email: yup
@@ -38,30 +40,32 @@ interface SignInUserInfo  {
   password:string
 }
 
-const handleSubmit = async (
-  values: SignInUserInfo,
-  actions: FormikHelpers<SignInUserInfo>
-) => {
-  // send the information to the api
-  // fetch()
-  actions.setSubmitting(true)
-  try {
-    const { data } = await client.post("/auth/sign-in", {
-      ...values,
-    });
-    console.log(data);
-    // navigation.navigate("Verification", {
-    //   userInfo: data.user,
-    // });
-  } catch (error) {
-    console.log("Signup error", error);
-  }
-  actions.setSubmitting(false);
-};
-
 const SignIn: FC<Props> = (props) => {
   const [secureEntry, setSecureEntry] = React.useState(true);
   const navigation = useNavigation<NavigationProp<AuthStackParamList>>()
+  const dispatch = useDispatch()
+  const handleSubmit = async (
+    values: SignInUserInfo,
+    actions: FormikHelpers<SignInUserInfo>
+  ) => {
+    // send the information to the api
+    // fetch()
+    actions.setSubmitting(true);
+    try {
+      const { data } = await client.post("/auth/sign-in", {
+        ...values,
+      });
+      // console.log(data);
+      dispatch(updateProfile(data.profile))
+      dispatch(updateLoggedInState(true))
+      // navigation.navigate("Verification", {
+      //   userInfo: data.user,
+      // });
+    } catch (error) {
+      console.log("Signup error", error);
+    }
+    actions.setSubmitting(false);
+  };
   return (
     <Form
       onSubmit={handleSubmit}

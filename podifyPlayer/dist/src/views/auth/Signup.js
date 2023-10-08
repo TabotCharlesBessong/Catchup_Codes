@@ -57,7 +57,7 @@ var PasswordVisibilityIcon_1 = require("@ui/PasswordVisibilityIcon");
 var react_native_1 = require("react-native");
 var yup = require("yup");
 var React = require("react");
-var axios_1 = require("axios");
+var client_1 = require("src/api/client");
 var signupSchema = yup.object({
     name: yup
         .string()
@@ -85,22 +85,31 @@ var SignUp = function (props) {
     var _a = React.useState(true), secureEntry = _a[0], setSecureEntry = _a[1];
     var navigation = (0, native_1.useNavigation)();
     var handleSubmit = function (values, actions) { return __awaiter(void 0, void 0, void 0, function () {
-        var responsne, error_1;
+        var data, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 2, , 3]);
-                    return [4 /*yield*/, axios_1.default.post("http://192.168.100.37:5000/auth/create", __assign({}, values))];
+                    // send the information to the api
+                    // fetch()
+                    actions.setSubmitting(true);
+                    _a.label = 1;
                 case 1:
-                    responsne = _a.sent();
-                    console.log(responsne);
-                    navigation.navigate("Signin");
-                    return [3 /*break*/, 3];
+                    _a.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, client_1.default.post("/auth/create", __assign({}, values))];
                 case 2:
+                    data = (_a.sent()).data;
+                    console.log(data);
+                    navigation.navigate("Verification", {
+                        userInfo: data.user,
+                    });
+                    return [3 /*break*/, 4];
+                case 3:
                     error_1 = _a.sent();
                     console.log("Signup error", error_1);
-                    return [3 /*break*/, 3];
-                case 3: return [2 /*return*/];
+                    return [3 /*break*/, 4];
+                case 4:
+                    actions.setSubmitting(false);
+                    return [2 /*return*/];
             }
         });
     }); };
