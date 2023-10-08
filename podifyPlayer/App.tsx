@@ -4,11 +4,14 @@ import store from "src/store";
 import colors from "./src/utils/colors";
 import React = require("react");
 import Navigator from "src/navigation";
+import AppContainer from "src/component/AppContainer";
 
 export default function App() {
   return (
     <Provider store={store}>
-      <Navigator />
+      <AppContainer>
+        <Navigator />
+      </AppContainer>
     </Provider>
   );
 }
