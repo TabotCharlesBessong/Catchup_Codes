@@ -10,6 +10,8 @@ import * as yup from "yup";
 import React = require("react");
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "src/@types/navigation";
+import { FormikHelpers } from "formik";
+import client from "src/api/client";
 
 const signupSchema = yup.object({
   email: yup
@@ -31,14 +33,36 @@ const initialValues = {
   password: "",
 };
 
+interface SignInUserInfo  {
+  email:string
+  password:string
+}
+
+const handleSubmit = async (
+  values: SignInUserInfo,
+  actions: FormikHelpers<SignInUserInfo>
+) => {
+  // send the information to the api
+  // fetch()
+  try {
+    const { data } = await client.post("/auth/sign-in", {
+      ...values,
+    });
+    console.log(data);
+    // navigation.navigate("Verification", {
+    //   userInfo: data.user,
+    // });
+  } catch (error) {
+    console.log("Signup error", error);
+  }
+};
+
 const SignIn: FC<Props> = (props) => {
   const [secureEntry, setSecureEntry] = React.useState(true);
   const navigation = useNavigation<NavigationProp<AuthStackParamList>>()
   return (
     <Form
-      onSubmit={(values) => {
-        console.log(values);
-      }}
+      onSubmit={handleSubmit}
       initialValues={initialValues}
       validationSchema={signupSchema}
     >
