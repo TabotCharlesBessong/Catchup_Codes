@@ -6,7 +6,7 @@ import Verification from "@views/auth/Verification"
 import { useSelector } from "react-redux"
 import { AuthStackParamList } from "src/@types/navigation"
 import { getAuthState } from "src/store/auth"
-const React = require("react")
+import React = require("react")
 
 const Stack = createNativeStackNavigator<AuthStackParamList>()
 
