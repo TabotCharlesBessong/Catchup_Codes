@@ -9,6 +9,8 @@ import * as yup from "yup";
 import React = require("react");
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { AuthStackParamList } from "src/@types/navigation";
+import client from "src/api/client";
+import { FormikHelpers } from "formik";
 
 const signupSchema = yup.object({
   email: yup
@@ -24,13 +26,36 @@ const initialValues = {
   email: "",
 };
 
+interface SignInUserInfo {
+  email: string;
+}
+
+const handleSubmit = async (
+  values: SignInUserInfo,
+  actions: FormikHelpers<SignInUserInfo>
+) => {
+  // send the information to the api
+  // fetch()
+  actions.setSubmitting(true);
+  try {
+    const { data } = await client.post("/auth/forget-password", {
+      ...values,
+    });
+    console.log(data);
+    // navigation.navigate("Verification", {
+    //   userInfo: data.user,
+    // });
+  } catch (error) {
+    console.log("Forgot password error", error);
+  }
+  actions.setSubmitting(false);
+};
+
 const ForgotPassword: FC<Props> = (props) => {
   const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
   return (
     <Form
-      onSubmit={(values) => {
-        console.log(values);
-      }}
+      onSubmit={handleSubmit}
       initialValues={initialValues}
       validationSchema={signupSchema}
     >

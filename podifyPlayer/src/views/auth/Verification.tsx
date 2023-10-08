@@ -72,7 +72,7 @@ const Verification: FC<Props> = ({ route,navigation }) => {
     setCountDown(60)
     setCanSendNewOTP(false)
     try {
-      // await client.post("/auth/re-verify-email", { userId: userInfo.id });
+      await client.post("/auth/re-verify-email", { userId: userInfo.id });
     } catch (error) {
       console.log("Requesting for new OTP", error);
     }
