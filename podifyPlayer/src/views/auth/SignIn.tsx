@@ -14,6 +14,7 @@ import { FormikHelpers } from "formik";
 import client from "src/api/client";
 import { updateLoggedInState, updateProfile } from "src/store/auth";
 import { useDispatch } from "react-redux";
+import { Keys, saveToAsyncStorage } from "@utils/asyncStorage";
 
 const signupSchema = yup.object({
   email: yup
@@ -56,6 +57,7 @@ const SignIn: FC<Props> = (props) => {
         ...values,
       });
       // console.log(data);
+      await saveToAsyncStorage(Keys.AUTH_TOKEN,data.token)
       dispatch(updateProfile(data.profile))
       dispatch(updateLoggedInState(true))
       // navigation.navigate("Verification", {
