@@ -1,17 +1,33 @@
+
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import colors from "@utils/colors";
-import { FC } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
-import React = require("react");
-import FileSelector from "src/component/FileSelector";
 import AppButton from "@ui/AppButton";
+import { categories } from "@utils/categories";
+import colors from "@utils/colors";
+import { FC, useState } from "react";
+import React = require("react");
+import {
+  View,
+  StyleSheet,
+  Text,
+  Pressable,
+  TextInput,
+  ScrollView,
+} from "react-native";
+import MaterialComIcon from "react-native-vector-icons/MaterialCommunityIcons";
+import CategorySelector from "src/component/CategorySelector";
+import FileSelector from "src/component/FileSelector";
 
 interface Props {}
 
 const Upload: FC<Props> = (props) => {
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [audioInfo, setAudioInfo] = useState({
+    category: "",
+  });
+
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.fileSelector}>
+      <View style={styles.fileSelctorContainer}>
         <FileSelector
           icon={
             <MaterialCommunityIcons
@@ -37,18 +53,47 @@ const Upload: FC<Props> = (props) => {
 
       <View style={styles.formContainer}>
         <TextInput
+          placeholderTextColor={colors.INACTIVE_CONTRAST}
           placeholder="Title"
           style={styles.input}
-          placeholderTextColor={colors.INACTIVE_CONTRAST}
         />
+
+        <Pressable
+          onPress={() => {
+            setShowCategoryModal(true);
+          }}
+          style={styles.categorySelector}
+        >
+          <Text style={styles.categorySelectorTitle}>Category</Text>
+          <Text style={styles.selectedCategory}>{audioInfo.category}</Text>
+        </Pressable>
+
         <TextInput
+          placeholderTextColor={colors.INACTIVE_CONTRAST}
           placeholder="About"
           style={styles.input}
-          placeholderTextColor={colors.INACTIVE_CONTRAST}
-          multiline
           numberOfLines={10}
+          multiline
         />
-        <AppButton title="Submit" borderRadius={8} />
+
+        <CategorySelector
+          visible={showCategoryModal}
+          onRequestClose={() => {
+            setShowCategoryModal(false);
+          }}
+          title="Category"
+          data={categories}
+          renderItem={(item) => {
+            return <Text style={styles.category}>{item}</Text>;
+          }}
+          onSelect={(item) => {
+            setAudioInfo({ category: item });
+          }}
+        />
+
+        <View style={{ marginBottom: 20 }} />
+
+        <AppButton borderRadius={7} title="Submit" />
       </View>
     </ScrollView>
   );
@@ -56,14 +101,9 @@ const Upload: FC<Props> = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
-    // alignItems: "flex-start",
-    // justifyContent: 'space-around',
-    // flexDirection:'row',
-    paddingTop: 32,
-    padding: 12,
+    padding: 10,
   },
-  fileSelector: {
+  fileSelctorContainer: {
     flexDirection: "row",
   },
   formContainer: {
@@ -76,8 +116,24 @@ const styles = StyleSheet.create({
     padding: 10,
     fontSize: 18,
     color: colors.CONTRAST,
-    marginBottom:20,
-    textAlignVertical:'top'
+    textAlignVertical: "top",
+  },
+  category: {
+    padding: 10,
+    color: colors.PRIMARY,
+  },
+  categorySelector: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 20,
+  },
+  categorySelectorTitle: {
+    color: colors.CONTRAST,
+  },
+  selectedCategory: {
+    color: colors.SECONDARY,
+    marginLeft: 5,
+    fontStyle: "italic",
   },
 });
 
