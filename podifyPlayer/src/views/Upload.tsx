@@ -1,7 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import colors from "@utils/colors";
 import { FC } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
 import React = require("react");
 import FileSelector from "src/component/FileSelector";
 
@@ -9,8 +9,8 @@ interface Props {}
 
 const Upload: FC<Props> = (props) => {
   return (
-    <View style={styles.container}>
-      <View style={styles.fileSelector} >
+    <ScrollView style={styles.container}>
+      <View style={styles.fileSelector}>
         <FileSelector
           icon={
             <MaterialCommunityIcons
@@ -30,14 +30,25 @@ const Upload: FC<Props> = (props) => {
             />
           }
           btnTitle="Select Audio"
-          style={{marginLeft:20}}
+          style={{ marginLeft: 20 }}
         />
       </View>
 
-      <View style={styles.formContainer} >
-        <TextInput />
+      <View style={styles.formContainer}>
+        <TextInput
+          placeholder="Title"
+          style={styles.input}
+          placeholderTextColor={colors.INACTIVE_CONTRAST}
+        />
+        <TextInput
+          placeholder="About"
+          style={styles.input}
+          placeholderTextColor={colors.INACTIVE_CONTRAST}
+          multiline
+          numberOfLines={10}
+        />
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -47,15 +58,25 @@ const styles = StyleSheet.create({
     // alignItems: "flex-start",
     // justifyContent: 'space-around',
     // flexDirection:'row',
-    // paddingTop:32,
-    padding:36
+    paddingTop: 32,
+    padding: 12,
   },
-  fileSelector:{
-    flexDirection:'row'
+  fileSelector: {
+    flexDirection: "row",
   },
-  formContainer:{
-    marginTop:20
-  }
+  formContainer: {
+    marginTop: 20,
+  },
+  input: {
+    borderWidth: 2,
+    borderColor: colors.SECONDARY,
+    borderRadius: 7,
+    padding: 10,
+    fontSize: 18,
+    color: colors.CONTRAST,
+    marginBottom:20,
+    textAlignVertical:'top'
+  },
 });
 
 export default Upload;
