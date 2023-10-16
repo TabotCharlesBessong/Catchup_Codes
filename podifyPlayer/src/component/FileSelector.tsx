@@ -11,9 +11,11 @@ interface Props {
   icon?:React.ReactNode
   btnTitle?:string
   style?:StyleProp<ViewStyle>
+  onSelect(file:DocumentPicker.DocumentPickerAsset):void
+  options:DocumentPicker.DocumentPickerOptions
 }
 
-const FileSelector: FC<Props> = ({icon,btnTitle,style}) => {
+const FileSelector: FC<Props> = ({icon,btnTitle,style,onSelect,options}) => {
   // const handleDocumentSelect = async () => {
   //   try {
   //     const document = await DocumentPicker.pick()
@@ -26,14 +28,24 @@ const FileSelector: FC<Props> = ({icon,btnTitle,style}) => {
   //     }
   //   }
   // }
+
+  // const selectDoc = async (type: "image" | "audio") => {
+  //   let docType = "*/*";
+  //   if (type === "image") docType = "image/*";
+  //   if (type === "audio") docType = "audio/*";
+
+  //   const docRes = await DocumentPicker.getDocumentAsync({
+  //     type: docType,
+  //   });
+  //   return docRes
+  // };
   const pickSomething = async () => {
     try {
 
-      const docRes = await DocumentPicker.getDocumentAsync({
-        type:"audio/*"
-      })
+      const docRes = await DocumentPicker.getDocumentAsync(options)
       const formData = new FormData()
       const file = docRes.assets[0]
+      onSelect(file)
 
       const audioFile = {
         name:file.name.split(".")[0],
@@ -43,15 +55,15 @@ const FileSelector: FC<Props> = ({icon,btnTitle,style}) => {
       }
 
       formData.append("audioFile",audioFile)
-      // console.log(formData)
-      // console.log(file)
-      const { data } = await client.post("/audio/create", formData, {
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      console.log(data)
+      console.log({formData})
+      console.log({file})
+      // const { data } = await client.post("/audio/create", formData, {
+      //   headers: {
+      //     Accept: "application/json",
+      //     "Content-Type": "multipart/form-data",
+      //   },
+      // });
+      // console.log(data)
     } catch (error) {
       console.log('====================================');
       console.log("Error while selecting file: ",error);

@@ -3,6 +3,7 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import AppButton from "@ui/AppButton";
 import { categories } from "@utils/categories";
 import colors from "@utils/colors";
+import { StatusBar } from "expo-status-bar";
 import { FC, useState } from "react";
 import React = require("react");
 import {
@@ -37,6 +38,8 @@ const Upload: FC<Props> = (props) => {
             />
           }
           btnTitle="Select Poster"
+          options={{ type: ["image/*"] }}
+          onSelect={() => {}}
         />
         <FileSelector
           icon={
@@ -48,6 +51,8 @@ const Upload: FC<Props> = (props) => {
           }
           btnTitle="Select Audio"
           style={{ marginLeft: 20 }}
+          options={{ type: ["audio/*"] }}
+          onSelect={() => {}}
         />
       </View>
 
@@ -95,6 +100,7 @@ const Upload: FC<Props> = (props) => {
 
         <AppButton borderRadius={7} title="Submit" />
       </View>
+      <StatusBar style="auto" />
     </ScrollView>
   );
 };
@@ -102,6 +108,7 @@ const Upload: FC<Props> = (props) => {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+    // marginTop:30
   },
   fileSelctorContainer: {
     flexDirection: "row",
