@@ -55,8 +55,8 @@ const FileSelector: FC<Props> = ({icon,btnTitle,style,onSelect,options}) => {
       }
 
       formData.append("audioFile",audioFile)
-      console.log({formData})
-      console.log({file})
+      // console.log({formData})
+      // console.log({file})
       // const { data } = await client.post("/audio/create", formData, {
       //   headers: {
       //     Accept: "application/json",

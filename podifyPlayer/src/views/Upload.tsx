@@ -16,6 +16,7 @@ import CategorySelector from "src/component/CategorySelector";
 import FileSelector from "src/component/FileSelector";
 import React = require("react");
 import { DocumentPickerAsset } from "expo-document-picker";
+import * as yup from "yup";
 
 interface FormFields {
   title: string;
@@ -31,6 +32,24 @@ const defaultForm: FormFields = {
   about: "",
 };
 
+const audioSchema = yup.object().shape({
+  title: yup.string().trim().required("title is missing"),
+  category: yup.string().oneOf(categories, "category is missing"),
+  about: yup.string().trim().required("about is missing"),
+  file: yup.object().shape({
+    uri: yup.string().required("Audio file is missing"),
+    name: yup.string().required("Audio file is missing"),
+    type: yup.string().required("Audio file is missing"),
+    size: yup.number().required("Audio file is missing"),
+  }),
+  poster: yup.object().shape({
+    uri: yup.string(),
+    name: yup.string(),
+    type: yup.string(),
+    size: yup.number(),
+  }),
+});
+
 interface Props {}
 
 const Upload: FC<Props> = (props) => {
@@ -38,8 +57,15 @@ const Upload: FC<Props> = (props) => {
   const [audioInfo, setAudioInfo] = useState({ ...defaultForm });
 
   const handleUpload = async () => {
-    console.log({audioInfo},"audioInfo")
-  }
+    try {
+      const data = await audioSchema.validate(audioInfo);
+      console.log(data);
+    } catch (error) {
+      if (error instanceof yup.ValidationError)
+        console.log("Validation error: ", error.message);
+      else console.log(error);
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
