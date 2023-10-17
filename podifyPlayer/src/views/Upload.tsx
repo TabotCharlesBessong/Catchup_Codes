@@ -1,29 +1,71 @@
-
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import AppButton from "@ui/AppButton";
 import { categories } from "@utils/categories";
 import colors from "@utils/colors";
+import { StatusBar } from "expo-status-bar";
 import { FC, useState } from "react";
-import React = require("react");
 import {
-  View,
+  Pressable,
+  ScrollView,
   StyleSheet,
   Text,
-  Pressable,
   TextInput,
-  ScrollView,
+  View,
 } from "react-native";
-import MaterialComIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import CategorySelector from "src/component/CategorySelector";
 import FileSelector from "src/component/FileSelector";
+import React = require("react");
+import { DocumentPickerAsset } from "expo-document-picker";
+import * as yup from "yup";
+
+interface FormFields {
+  title: string;
+  category: string;
+  about: string;
+  file?: DocumentPickerAsset;
+  poster?: DocumentPickerAsset;
+}
+
+const defaultForm: FormFields = {
+  title: "",
+  category: "",
+  about: "",
+};
+
+const audioSchema = yup.object().shape({
+  title: yup.string().trim().required("title is missing"),
+  category: yup.string().oneOf(categories, "category is missing"),
+  about: yup.string().trim().required("about is missing"),
+  file: yup.object().shape({
+    uri: yup.string().required("Audio file is missing"),
+    name: yup.string().required("Audio file is missing"),
+    type: yup.string().required("Audio file is missing"),
+    size: yup.number().required("Audio file is missing"),
+  }),
+  poster: yup.object().shape({
+    uri: yup.string(),
+    name: yup.string(),
+    type: yup.string(),
+    size: yup.number(),
+  }),
+});
 
 interface Props {}
 
 const Upload: FC<Props> = (props) => {
   const [showCategoryModal, setShowCategoryModal] = useState(false);
-  const [audioInfo, setAudioInfo] = useState({
-    category: "",
-  });
+  const [audioInfo, setAudioInfo] = useState({ ...defaultForm });
+
+  const handleUpload = async () => {
+    try {
+      const data = await audioSchema.validate(audioInfo);
+      console.log(data);
+    } catch (error) {
+      if (error instanceof yup.ValidationError)
+        console.log("Validation error: ", error.message);
+      else console.log(error);
+    }
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -37,6 +79,10 @@ const Upload: FC<Props> = (props) => {
             />
           }
           btnTitle="Select Poster"
+          options={{ type: ["image/*"] }}
+          onSelect={(poster) => {
+            setAudioInfo({ ...audioInfo, poster });
+          }}
         />
         <FileSelector
           icon={
@@ -48,6 +94,10 @@ const Upload: FC<Props> = (props) => {
           }
           btnTitle="Select Audio"
           style={{ marginLeft: 20 }}
+          options={{ type: ["audio/*"] }}
+          onSelect={(file) => {
+            setAudioInfo({ ...audioInfo, file });
+          }}
         />
       </View>
 
@@ -56,6 +106,9 @@ const Upload: FC<Props> = (props) => {
           placeholderTextColor={colors.INACTIVE_CONTRAST}
           placeholder="Title"
           style={styles.input}
+          onChangeText={(text) => {
+            setAudioInfo({ ...audioInfo, title: text });
+          }}
         />
 
         <Pressable
@@ -74,6 +127,9 @@ const Upload: FC<Props> = (props) => {
           style={styles.input}
           numberOfLines={10}
           multiline
+          onChangeText={(text) => {
+            setAudioInfo({ ...audioInfo, about: text });
+          }}
         />
 
         <CategorySelector
@@ -87,14 +143,15 @@ const Upload: FC<Props> = (props) => {
             return <Text style={styles.category}>{item}</Text>;
           }}
           onSelect={(item) => {
-            setAudioInfo({ category: item });
+            setAudioInfo({ ...audioInfo, category: item });
           }}
         />
 
         <View style={{ marginBottom: 20 }} />
 
-        <AppButton borderRadius={7} title="Submit" />
+        <AppButton borderRadius={7} title="Submit" onPress={handleUpload} />
       </View>
+      <StatusBar style="auto" />
     </ScrollView>
   );
 };
@@ -102,6 +159,7 @@ const Upload: FC<Props> = (props) => {
 const styles = StyleSheet.create({
   container: {
     padding: 10,
+    marginTop: 30,
   },
   fileSelctorContainer: {
     flexDirection: "row",
