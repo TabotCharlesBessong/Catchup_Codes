@@ -15,7 +15,10 @@ const Home: FC<Props> = (props) => {
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    padding:10,
+    marginTop:20
+  },
 });
 
 export default Home

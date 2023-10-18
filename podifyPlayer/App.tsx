@@ -5,13 +5,18 @@ import Navigator from "src/navigation";
 import store from "src/store";
 import colors from "./src/utils/colors";
 import React = require("react");
+import { QueryClient, QueryClientProvider } from "react-query";
+
+const queryClient = new QueryClient()
 
 export default function App() {
   return (
     <Provider store={store}>
-      <AppContainer>
-        <Navigator />
-      </AppContainer>
+      <QueryClientProvider client={queryClient} >
+        <AppContainer>
+          <Navigator />
+        </AppContainer>
+      </QueryClientProvider>
     </Provider>
   );
 }
