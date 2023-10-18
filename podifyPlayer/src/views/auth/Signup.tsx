@@ -75,7 +75,7 @@ const SignUp: FC<Props> = (props) => {
       });
     } catch (error) {
       console.log("Why is this not working on android")
-      console.log(error)
+      // console.log(error)
       const errorMessage = catchAsyncError(error);
       dispatch(upldateNotification({ message: errorMessage, type: "error" }));
     }
