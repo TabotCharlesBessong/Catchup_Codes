@@ -5,8 +5,12 @@ import colors from "./src/utils/colors";
 import React = require("react");
 import Navigator from "src/navigation";
 import AppContainer from "src/component/AppContainer";
+import { clearAsyncStorage } from "@utils/asyncStorage";
 
 export default function App() {
+  clearAsyncStorage().then(() => {
+    console.log('logout')
+  })
   return (
     <Provider store={store}>
       <AppContainer>

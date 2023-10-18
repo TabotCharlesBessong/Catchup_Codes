@@ -21,6 +21,9 @@ import Progress from "@ui/Progress";
 import client from "src/api/client";
 import { Keys, getFromAsyncStorage } from "@utils/asyncStorage";
 import { mapRange } from "@utils/math";
+import catchAsyncError from "src/api/catchError";
+import { upldateNotification } from "src/store/notification";
+import { useDispatch } from "react-redux";
 
 interface FormFields {
   title: string;
@@ -34,8 +37,8 @@ const defaultForm: FormFields = {
   title: "",
   category: "",
   about: "",
-  file:undefined,
-  poster:undefined
+  file: undefined,
+  poster: undefined,
 };
 
 const audioSchema = yup.object().shape({
@@ -63,9 +66,10 @@ const Upload: FC<Props> = (props) => {
   const [audioInfo, setAudioInfo] = useState({ ...defaultForm });
   const [uploadProgress, setUploadProgress] = useState(0);
   const [busy, setBusy] = useState(false);
+  const dispatch = useDispatch()
 
   const handleUpload = async () => {
-    setBusy(true)
+    setBusy(true);
     try {
       const finalData = await audioSchema.validate(audioInfo);
       // console.log(data);
@@ -73,48 +77,51 @@ const Upload: FC<Props> = (props) => {
       formData.append("title", finalData.title);
       formData.append("about", finalData.about);
       formData.append("category", finalData.category);
-      formData.append("file",{
+      formData.append("file", {
         name: finalData.file.name,
         type: finalData.file.type,
         uri: finalData.file.uri,
       });
-      if(finalData.poster.uri){
-        formData.append("poster",{
+      if (finalData.poster.uri) {
+        formData.append("poster", {
           name: finalData.poster.name,
           type: finalData.poster.type,
           uri: finalData.poster.uri,
         });
       }
 
-      const token = await getFromAsyncStorage(Keys.AUTH_TOKEN)
-      const {data} = await client.post("/audio/create",formData,{
-        headers:{
-          Authorization:"Bearer " + token,
-          "Content-Type":"multipart/form-data"
+      const token = await getFromAsyncStorage(Keys.AUTH_TOKEN);
+      const { data } = await client.post("/audio/create", formData, {
+        headers: {
+          Authorization: "Bearer " + token,
+          "Content-Type": "multipart/form-data",
         },
-        onUploadProgress(progressEvent){
+        onUploadProgress(progressEvent) {
           const uploaded = mapRange({
-            inputMin:0,
-            inputMax:progressEvent.total || 0,
-            outputMin:0,
-            outputMax:100,
-            inputValue:progressEvent.loaded
-          })
+            inputMin: 0,
+            inputMax: progressEvent.total || 0,
+            outputMin: 0,
+            outputMax: 100,
+            inputValue: progressEvent.loaded,
+          });
 
-          if(uploaded >= 100){
-            setAudioInfo({...defaultForm})
-            setBusy(false)
-          } 
-          setUploadProgress(Math.floor(uploaded))
-        }
+          if (uploaded >= 100) {
+            setAudioInfo({ ...defaultForm });
+            setBusy(false);
+          }
+          setUploadProgress(Math.floor(uploaded));
+        },
       });
-      console.log(data)
+      console.log(data);
     } catch (error) {
       if (error instanceof yup.ValidationError)
         console.log("Validation error: ", error.message);
-      else console.log(error);
+      else {
+        const errorMessage = catchAsyncError(error);
+        dispatch(upldateNotification({ message: errorMessage, type: "error" }));
+      }
     }
-    setBusy(false)
+    setBusy(false);
   };
 
   return (

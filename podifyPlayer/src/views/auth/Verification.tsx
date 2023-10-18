@@ -9,12 +9,16 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { AuthStackParamList } from "src/@types/navigation";
 import client from "src/api/client";
 import colors from "@utils/colors";
+import catchAsyncError from "src/api/catchError";
+import { upldateNotification } from "src/store/notification";
+import { useDispatch } from "react-redux";
 
 type Props = NativeStackScreenProps<AuthStackParamList, "Verification">;
 
 const otpFields = new Array(6).fill("");
 
 const Verification: FC<Props> = ({ route,navigation }) => {
+  const dispatch = useDispatch()
   const [otp, setOtp] = React.useState([...otpFields]);
   const [otpIndex, setOtpIndex] = React.useState(0);
   const inputRef = React.useRef<TextInput>(null);
@@ -63,7 +67,8 @@ const Verification: FC<Props> = ({ route,navigation }) => {
       console.log(data);
       navigation.navigate("Signin");
     } catch (error) {
-      console.log(error, "Verification error");
+      const errorMessage = catchAsyncError(error);
+      dispatch(upldateNotification({ message: errorMessage, type: "error" }));
     }
     setIsSubmitting(false);
   };
