@@ -1,10 +1,10 @@
 import { StyleSheet } from "react-native";
 import { Provider } from "react-redux";
+import AppContainer from "src/component/AppContainer";
+import Navigator from "src/navigation";
 import store from "src/store";
 import colors from "./src/utils/colors";
 import React = require("react");
-import Navigator from "src/navigation";
-import AppContainer from "src/component/AppContainer";
 
 export default function App() {
   return (

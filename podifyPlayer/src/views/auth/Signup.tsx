@@ -13,6 +13,9 @@ import * as yup from "yup";
 import React = require("react");
 import axios from "axios";
 import client from "src/api/client";
+import catchAsyncError from "src/api/catchError";
+import { useDispatch } from "react-redux";
+import { upldateNotification } from "src/store/notification";
 
 const signupSchema = yup.object({
   name: yup
@@ -51,6 +54,7 @@ const initialValues = {
 };
 
 const SignUp: FC<Props> = (props) => {
+  const dispatch = useDispatch();
   const [secureEntry, setSecureEntry] = React.useState(true);
   const navigation = useNavigation<NavigationProp<AuthStackParamList>>();
 
@@ -59,10 +63,10 @@ const SignUp: FC<Props> = (props) => {
     actions: FormikHelpers<NewUser>
   ) => {
     // send the information to the api
-    // fetch()
-    actions.setSubmitting(true)
+    // fetch()console.log(error);
+    actions.setSubmitting(true);
     try {
-      const {data} = await client.post("/auth/create", {
+      const { data } = await client.post("/auth/create", {
         ...values,
       });
       console.log(data);
@@ -70,9 +74,12 @@ const SignUp: FC<Props> = (props) => {
         userInfo: data.user,
       });
     } catch (error) {
-      console.log("Signup error", error);
+      console.log("Why is this not working on android")
+      // console.log(error)
+      const errorMessage = catchAsyncError(error);
+      dispatch(upldateNotification({ message: errorMessage, type: "error" }));
     }
-    actions.setSubmitting(false)
+    actions.setSubmitting(false);
   };
 
   return (

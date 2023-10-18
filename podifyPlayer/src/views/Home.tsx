@@ -1,10 +1,12 @@
 import React = require('react');
-import {FC} from 'react';
-import {View, StyleSheet,Text} from 'react-native';
+import { FC } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { useDispatch } from 'react-redux';
 
 interface Props {}
 
 const Home: FC<Props> = (props) => {
+  const dispatch = useDispatch()
   return (
     <View style={styles.container}>
       <Text>Hello Home</Text>
