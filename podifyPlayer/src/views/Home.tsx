@@ -1,24 +1,58 @@
-import React = require('react');
-import { FC } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { useDispatch } from 'react-redux';
+import React = require("react");
+import { FC } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import { useQuery } from "react-query";
+import { useDispatch } from "react-redux";
+import catchAsyncError from "src/api/catchError";
+import client from "src/api/client";
+import { useFetchLatestAudios } from "src/hooks/query";
+import { upldateNotification } from "src/store/notification";
 
 interface Props {}
 
 const Home: FC<Props> = (props) => {
-  const dispatch = useDispatch()
+  const { data, isLoading } = useFetchLatestAudios();
+
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <Text
+          style={{
+            color: "white",
+            fontSize: 32,
+            textAlign: "center",
+            alignSelf: "center",
+          }}
+        >
+          Hello Home
+        </Text>
+      </View>
+    );
+  }
   return (
     <View style={styles.container}>
-      <Text>Hello Home</Text>
+      {/* <Text>Hello Home</Text> */}
+      {data?.map((item) => (
+        <Text
+          style={{
+            color: "white",
+            fontSize: 16,
+            paddingVertical:10
+          }}
+          key={item.id}
+        >
+          {item.title}
+        </Text>
+      ))}
     </View>
-  )
+  );
 };
 
 const styles = StyleSheet.create({
   container: {
-    padding:10,
-    marginTop:20
+    padding: 10,
+    marginTop: 20,
   },
 });
 
-export default Home
+export default Home;
