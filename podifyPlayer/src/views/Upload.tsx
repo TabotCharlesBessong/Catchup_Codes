@@ -17,6 +17,10 @@ import FileSelector from "src/component/FileSelector";
 import React = require("react");
 import { DocumentPickerAsset } from "expo-document-picker";
 import * as yup from "yup";
+import Progress from "@ui/Progress";
+import client from "src/api/client";
+import { Keys, getFromAsyncStorage } from "@utils/asyncStorage";
+import { mapRange } from "@utils/math";
 
 interface FormFields {
   title: string;
@@ -30,6 +34,8 @@ const defaultForm: FormFields = {
   title: "",
   category: "",
   about: "",
+  file:undefined,
+  poster:undefined
 };
 
 const audioSchema = yup.object().shape({
@@ -55,16 +61,60 @@ interface Props {}
 const Upload: FC<Props> = (props) => {
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [audioInfo, setAudioInfo] = useState({ ...defaultForm });
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [busy, setBusy] = useState(false);
 
   const handleUpload = async () => {
+    setBusy(true)
     try {
-      const data = await audioSchema.validate(audioInfo);
-      console.log(data);
+      const finalData = await audioSchema.validate(audioInfo);
+      // console.log(data);
+      const formData = new FormData();
+      formData.append("title", finalData.title);
+      formData.append("about", finalData.about);
+      formData.append("category", finalData.category);
+      formData.append("file",{
+        name: finalData.file.name,
+        type: finalData.file.type,
+        uri: finalData.file.uri,
+      });
+      if(finalData.poster.uri){
+        formData.append("poster",{
+          name: finalData.poster.name,
+          type: finalData.poster.type,
+          uri: finalData.poster.uri,
+        });
+      }
+
+      const token = await getFromAsyncStorage(Keys.AUTH_TOKEN)
+      const {data} = await client.post("/audio/create",formData,{
+        headers:{
+          Authorization:"Bearer " + token,
+          "Content-Type":"multipart/form-data"
+        },
+        onUploadProgress(progressEvent){
+          const uploaded = mapRange({
+            inputMin:0,
+            inputMax:progressEvent.total || 0,
+            outputMin:0,
+            outputMax:100,
+            inputValue:progressEvent.loaded
+          })
+
+          if(uploaded >= 100){
+            setAudioInfo({...defaultForm})
+            setBusy(false)
+          } 
+          setUploadProgress(Math.floor(uploaded))
+        }
+      });
+      console.log(data)
     } catch (error) {
       if (error instanceof yup.ValidationError)
         console.log("Validation error: ", error.message);
       else console.log(error);
     }
+    setBusy(false)
   };
 
   return (
@@ -109,6 +159,7 @@ const Upload: FC<Props> = (props) => {
           onChangeText={(text) => {
             setAudioInfo({ ...audioInfo, title: text });
           }}
+          value={audioInfo.title}
         />
 
         <Pressable
@@ -130,6 +181,7 @@ const Upload: FC<Props> = (props) => {
           onChangeText={(text) => {
             setAudioInfo({ ...audioInfo, about: text });
           }}
+          value={audioInfo.about}
         />
 
         <CategorySelector
@@ -147,9 +199,16 @@ const Upload: FC<Props> = (props) => {
           }}
         />
 
-        <View style={{ marginBottom: 20 }} />
+        <View style={{ marginVertical: 20 }}>
+          {busy ? <Progress progress={uploadProgress} /> : null}
+        </View>
 
-        <AppButton borderRadius={7} title="Submit" onPress={handleUpload} />
+        <AppButton
+          busy={busy}
+          borderRadius={7}
+          title="Submit"
+          onPress={handleUpload}
+        />
       </View>
       <StatusBar style="auto" />
     </ScrollView>

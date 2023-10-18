@@ -45,14 +45,14 @@ const FileSelector: FC<Props> = ({icon,btnTitle,style,onSelect,options}) => {
       const docRes = await DocumentPicker.getDocumentAsync(options)
       const formData = new FormData()
       const file = docRes.assets[0]
-      onSelect(file)
-
       const audioFile = {
         name:file.name.split(".")[0],
         uri:file.uri,
         type:file.mimeType,
         size:file.size
       }
+      onSelect(audioFile)
+
 
       formData.append("audioFile",audioFile)
       // console.log({formData})
