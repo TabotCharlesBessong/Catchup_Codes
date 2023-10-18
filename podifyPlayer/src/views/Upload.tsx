@@ -20,6 +20,7 @@ import * as yup from "yup";
 import Progress from "@ui/Progress";
 import client from "src/api/client";
 import { Keys, getFromAsyncStorage } from "@utils/asyncStorage";
+import { mapRange } from "@utils/math";
 
 interface FormFields {
   title: string;
@@ -33,6 +34,8 @@ const defaultForm: FormFields = {
   title: "",
   category: "",
   about: "",
+  file:undefined,
+  poster:undefined
 };
 
 const audioSchema = yup.object().shape({
@@ -62,6 +65,7 @@ const Upload: FC<Props> = (props) => {
   const [busy, setBusy] = useState(false);
 
   const handleUpload = async () => {
+    setBusy(true)
     try {
       const finalData = await audioSchema.validate(audioInfo);
       // console.log(data);
@@ -87,6 +91,21 @@ const Upload: FC<Props> = (props) => {
         headers:{
           Authorization:"Bearer " + token,
           "Content-Type":"multipart/form-data"
+        },
+        onUploadProgress(progressEvent){
+          const uploaded = mapRange({
+            inputMin:0,
+            inputMax:progressEvent.total || 0,
+            outputMin:0,
+            outputMax:100,
+            inputValue:progressEvent.loaded
+          })
+
+          if(uploaded >= 100){
+            setAudioInfo({...defaultForm})
+            setBusy(false)
+          } 
+          setUploadProgress(Math.floor(uploaded))
         }
       });
       console.log(data)
@@ -95,6 +114,7 @@ const Upload: FC<Props> = (props) => {
         console.log("Validation error: ", error.message);
       else console.log(error);
     }
+    setBusy(false)
   };
 
   return (
@@ -139,6 +159,7 @@ const Upload: FC<Props> = (props) => {
           onChangeText={(text) => {
             setAudioInfo({ ...audioInfo, title: text });
           }}
+          value={audioInfo.title}
         />
 
         <Pressable
@@ -160,6 +181,7 @@ const Upload: FC<Props> = (props) => {
           onChangeText={(text) => {
             setAudioInfo({ ...audioInfo, about: text });
           }}
+          value={audioInfo.about}
         />
 
         <CategorySelector
@@ -181,7 +203,12 @@ const Upload: FC<Props> = (props) => {
           {busy ? <Progress progress={uploadProgress} /> : null}
         </View>
 
-        <AppButton borderRadius={7} title="Submit" onPress={handleUpload} />
+        <AppButton
+          busy={busy}
+          borderRadius={7}
+          title="Submit"
+          onPress={handleUpload}
+        />
       </View>
       <StatusBar style="auto" />
     </ScrollView>
