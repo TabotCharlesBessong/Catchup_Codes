@@ -6,10 +6,14 @@ import store from "src/store";
 import colors from "./src/utils/colors";
 import React = require("react");
 import { QueryClient, QueryClientProvider } from "react-query";
+// import { clearAsyncStorage } from "@utils/asyncStorage";
 
 const queryClient = new QueryClient()
 
 export default function App() {
+  // clearAsyncStorage().then(() => {
+  //   console.log("logout");
+  // });
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient} >
