@@ -13,6 +13,7 @@ import { upldateNotification } from "src/store/notification";
 import client from "src/api/client";
 import { Keys, getFromAsyncStorage } from "@utils/asyncStorage";
 import PlayListModal from "src/component/PlaylistModal";
+import PlaylistForm, { PlaylistInfo } from "src/component/PlaylistForm";
 
 interface Props {}
 
@@ -104,7 +105,7 @@ const Home: FC<Props> = (props) => {
           );
         }}
       />
-      <PlayListModal
+      {/* <PlayListModal
         visible
         onRequestClose={function (): void {
           throw new Error("Function not implemented.");
@@ -116,7 +117,13 @@ const Home: FC<Props> = (props) => {
         onPlaylistPress={function (item: Playlist): void {
           throw new Error("Function not implemented.");
         }}
-      />
+      /> */}
+
+      <PlaylistForm visible={true} onRequestClose={function (): void {
+        throw new Error("Function not implemented.");
+      } } onSubmit={function (value: PlaylistInfo): void {
+        throw new Error("Function not implemented.");
+      } } />
     </View>
   );
 };
