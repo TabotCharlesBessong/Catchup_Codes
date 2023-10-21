@@ -6,6 +6,8 @@ interface Props<T> {
   data: T[];
   renderItem(item: T): JSX.Element;
   col?: number;
+  onPress?(): void;
+  onLongPress?(): void;
 }
 
 const GridView = <T extends any>(props: Props<T>) => {

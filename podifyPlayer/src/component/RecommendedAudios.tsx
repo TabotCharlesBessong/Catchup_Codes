@@ -4,16 +4,20 @@ import colors from '@utils/colors';
 import {FC} from 'react';
 import React = require('react');
 import {View, StyleSheet, Text, Image, Pressable} from 'react-native';
+import { AudioData } from 'src/@types/audio';
 import {useFetchRecommendedAudios} from 'src/hooks/query';
 
-interface Props {}
+interface Props {
+  onAudioPress(item: AudioData, dat: AudioData[]): void;
+  onAudioLongPress(item: AudioData, dat: AudioData[]): void;
+}
 const dummyData = new Array(6).fill('');
 
-const RecommendedAudios: FC<Props> = props => {
-  const {data, isLoading} = useFetchRecommendedAudios();
+const RecommendedAudios: FC<Props> = ({ onAudioLongPress, onAudioPress }) => {
+  const { data, isLoading } = useFetchRecommendedAudios();
 
   const getPoster = (poster?: string) => {
-    return poster ? {uri: poster} : require('../../assets/music.png');
+    return poster ? { uri: poster } : require("../../assets/music.png");
   };
 
   if (isLoading)
@@ -24,7 +28,7 @@ const RecommendedAudios: FC<Props> = props => {
           <GridView
             col={3}
             data={dummyData}
-            renderItem={item => {
+            renderItem={(item) => {
               return <View style={styles.dummyAudioView} />;
             }}
           />
@@ -38,14 +42,18 @@ const RecommendedAudios: FC<Props> = props => {
       <GridView
         col={3}
         data={data || []}
-        renderItem={item => {
+        renderItem={(item) => {
           return (
-            <Pressable>
+            <Pressable
+              onPress={() => onAudioPress(item, data)}
+              onLongPress={() => onAudioLongPress(item, data)}
+            >
               <Image source={getPoster(item.poster)} style={styles.poster} />
               <Text
                 numberOfLines={2}
                 ellipsizeMode="tail"
-                style={styles.audioTitle}>
+                style={styles.audioTitle}
+              >
                 {item.title}
               </Text>
             </Pressable>
