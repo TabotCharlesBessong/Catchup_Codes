@@ -7,11 +7,30 @@ import RecommendedAudios from "src/component/RecommendedAudios";
 interface Props {}
 
 const Home: FC<Props> = (props) => {
+  // const onAudioPress = () => {
+
+  // }
+
+  // const onAudioLongPress = () => {};
 
   return (
     <View style={styles.container}>
-      <LatestUploads />
-      <RecommendedAudios />
+      <LatestUploads
+        onAudioLongPress={(item) => {
+          console.log("ouch");
+        }}
+        onAudioPress={(item) => {
+          console.log(item);
+        }}
+      />
+      <RecommendedAudios
+        onAudioLongPress={(item) => {
+          console.log("ouch");
+        }}
+        onAudioPress={(item) => {
+          console.log(item);
+        }}
+      />
     </View>
   );
 };
