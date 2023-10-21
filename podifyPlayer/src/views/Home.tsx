@@ -7,11 +7,12 @@ import OptionsModal from "src/component/OptionsModal";
 import colors from "@utils/colors";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useDispatch } from "react-redux";
-import { AudioData } from "src/@types/audio";
+import { AudioData, Playlist } from "src/@types/audio";
 import catchAsyncError from "src/api/catchError";
 import { upldateNotification } from "src/store/notification";
 import client from "src/api/client";
 import { Keys, getFromAsyncStorage } from "@utils/asyncStorage";
+import PlayListModal from "src/component/PlaylistModal";
 
 interface Props {}
 
@@ -101,6 +102,19 @@ const Home: FC<Props> = (props) => {
               <Text style={styles.optionLabel}>{item.title}</Text>
             </Pressable>
           );
+        }}
+      />
+      <PlayListModal
+        visible
+        onRequestClose={function (): void {
+          throw new Error("Function not implemented.");
+        }}
+        list={[
+          { title: "Playlist one", visibility: "public", id: 1 },
+          { title: "Playlist two", visibility: "private", id: 2 },
+        ]}
+        onPlaylistPress={function (item: Playlist): void {
+          throw new Error("Function not implemented.");
         }}
       />
     </View>
