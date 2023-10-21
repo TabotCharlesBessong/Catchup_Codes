@@ -1,8 +1,11 @@
 import { FC } from "react";
-import { StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import LatestUploads from "src/component/LatestUploads";
 import React = require("react");
 import RecommendedAudios from "src/component/RecommendedAudios";
+import OptionsModal from "src/component/OptionsModal";
+import colors from "@utils/colors";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 interface Props {}
 
@@ -13,11 +16,14 @@ const Home: FC<Props> = (props) => {
 
   // const onAudioLongPress = () => {};
 
+  const [showOptions, setShowOptions] = React.useState(false);
+
   return (
     <View style={styles.container}>
       <LatestUploads
         onAudioLongPress={(item) => {
-          console.log("ouch");
+          // console.log("ouch");
+          setShowOptions(true);
         }}
         onAudioPress={(item) => {
           console.log(item);
@@ -25,10 +31,42 @@ const Home: FC<Props> = (props) => {
       />
       <RecommendedAudios
         onAudioLongPress={(item) => {
-          console.log("ouch");
+          // console.log("ouch");
+          setShowOptions(true);
         }}
         onAudioPress={(item) => {
           console.log(item);
+        }}
+      />
+
+      <OptionsModal
+        visible={showOptions}
+        onRequestClose={() => {
+          setShowOptions(false);
+        }}
+        options={[
+          {
+            title: "Add to playlist",
+            icon: "playlist-music",
+            // onPress: handleOnAddToPlaylist,
+          },
+          {
+            title: "Add to favorite",
+            icon: "cards-heart",
+            // onPress: handleOnFavPress,
+          },
+        ]}
+        renderItem={(item) => {
+          return (
+            <Pressable style={styles.optionContainer}>
+              <MaterialCommunityIcons
+                size={24}
+                color={colors.PRIMARY}
+                name={item.icon}
+              />
+              <Text style={styles.optionLabel}>{item.title}</Text>
+            </Pressable>
+          );
         }}
       />
     </View>
@@ -40,6 +78,12 @@ const styles = StyleSheet.create({
     padding: 20,
     marginTop: 20,
   },
+  optionContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: 10,
+  },
+  optionLabel: { color: colors.PRIMARY, fontSize: 16, marginLeft: 5 },
 });
 
 export default Home;
