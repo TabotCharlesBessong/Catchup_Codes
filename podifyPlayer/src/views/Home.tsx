@@ -1,3 +1,4 @@
+import PulseAnimationContainer from "@ui/PulseAnimationContainer";
 import React = require("react");
 import { FC } from "react";
 import { StyleSheet, Text, View } from "react-native";
@@ -13,22 +14,23 @@ interface Props {}
 const Home: FC<Props> = (props) => {
   const { data, isLoading } = useFetchLatestAudios();
 
-  if (isLoading) {
+  // if (isLoading) {
     return (
-      <View style={styles.container}>
+      <PulseAnimationContainer>
         <Text
           style={{
             color: "white",
             fontSize: 32,
             textAlign: "center",
             alignSelf: "center",
+            marginTop:20
           }}
         >
-          Hello Home
+          Lauding....
         </Text>
-      </View>
+      </PulseAnimationContainer>
     );
-  }
+  // }
   return (
     <View style={styles.container}>
       {/* <Text>Hello Home</Text> */}
