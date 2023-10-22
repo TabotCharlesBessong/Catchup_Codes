@@ -1,9 +1,9 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import BasicModalContainer from '@ui/BasicModalContainer';
 import colors from '@utils/colors';
 import {FC, useState} from 'react';
 import React = require('react');
 import {View, StyleSheet, TextInput, Pressable, Text} from 'react-native';
-import MaterialComIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 export interface PlaylistInfo {
   title: string;
@@ -51,9 +51,9 @@ const PlaylistForm: FC<Props> = ({visible, onSubmit, onRequestClose}) => {
           }}
           style={styles.privateSelector}>
           {playlistInfo.private ? (
-            <MaterialComIcon name="radiobox-marked" color={colors.PRIMARY} />
+            <MaterialCommunityIcons name="radiobox-marked" color={colors.PRIMARY} />
           ) : (
-            <MaterialComIcon name="radiobox-blank" color={colors.PRIMARY} />
+            <MaterialCommunityIcons name="radiobox-blank" color={colors.PRIMARY} />
           )}
           <Text style={styles.privateLabel}>Private</Text>
         </Pressable>
