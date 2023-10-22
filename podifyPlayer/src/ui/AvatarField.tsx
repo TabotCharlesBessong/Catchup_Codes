@@ -1,7 +1,8 @@
+import { Entypo } from '@expo/vector-icons';
 import colors from '@utils/colors';
 import {FC} from 'react';
+import React = require('react');
 import {View, StyleSheet, Image} from 'react-native';
-import EnrypoIcon from 'react-native-vector-icons/Entypo';
 
 interface Props {
   source?: string;
@@ -16,7 +17,7 @@ const AvatarField: FC<Props> = ({source}) => {
         <Image source={{uri: source}} style={styles.avatarImage} />
       ) : (
         <View style={styles.avatarImage}>
-          <EnrypoIcon name="mic" size={30} color={colors.PRIMARY} />
+          <Entypo name="mic" size={30} color={colors.PRIMARY} />
         </View>
       )}
     </View>

@@ -7,14 +7,19 @@ import UploadsTab from 'src/component/profile/UploadsTab';
 import React = require('react');
 import HistoryTab from 'src/component/profile/HistoryTab';
 import colors from '@utils/colors';
+import ProfileContainer from 'src/component/ProfileContainer';
+import { useSelector } from 'react-redux';
+import { getAuthState } from 'src/store/auth';
 
 interface Props {}
 
 const Tab = createMaterialTopTabNavigator()
 
 const Profile: FC<Props> = (props) => {
+  const {profile} = useSelector(getAuthState)
   return (
     <View style={styles.container}>
+      <ProfileContainer profile={profile} />
       <Tab.Navigator screenOptions={{
         tabBarStyle:styles.tabBarStyle,
         tabBarLabelStyle:styles.tabBarLael
