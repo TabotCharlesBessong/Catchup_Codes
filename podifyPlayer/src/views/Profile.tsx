@@ -1,19 +1,58 @@
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { FC } from 'react';
+import { StyleSheet, View } from 'react-native';
+import FavoriteTab from 'src/component/profile/FavoriteTab';
+import PlaylistTab from 'src/component/profile/PlaylistTab';
+import UploadsTab from 'src/component/profile/UploadsTab';
 import React = require('react');
-import {FC} from 'react';
-import {View, StyleSheet,Text} from 'react-native';
+import HistoryTab from 'src/component/profile/HistoryTab';
+import colors from '@utils/colors';
+import ProfileContainer from 'src/component/ProfileContainer';
+import { useSelector } from 'react-redux';
+import { getAuthState } from 'src/store/auth';
 
 interface Props {}
 
+const Tab = createMaterialTopTabNavigator()
+
 const Profile: FC<Props> = (props) => {
+  const {profile} = useSelector(getAuthState)
   return (
     <View style={styles.container}>
-      <Text>Hello Profile</Text>
+      <ProfileContainer profile={profile} />
+      <Tab.Navigator screenOptions={{
+        tabBarStyle:styles.tabBarStyle,
+        tabBarLabelStyle:styles.tabBarLael
+      }} >
+        <Tab.Screen name="Uploads" component={UploadsTab} />
+        <Tab.Screen name="Playlist" component={PlaylistTab} />
+        <Tab.Screen name="Favourites" component={FavoriteTab} />
+        <Tab.Screen name="History" component={HistoryTab} />
+      </Tab.Navigator>
     </View>
-  )
+  );
 };
 
 const styles = StyleSheet.create({
-  container: {},
+  container: {
+    flex:1,
+    padding:20,
+    marginTop:10
+  },
+  tabBarStyle:{
+    backgroundColor:'transparent',
+    elevation:0,
+    shadowRadius:0,
+    shadowColor:'transparent',
+    shadowOffset:{
+      width:0,
+      height:0
+    },
+    shadowOpacity:0
+  },
+  tabBarLael:{
+    color:colors.CONTRAST
+  }
 });
 
 export default Profile
