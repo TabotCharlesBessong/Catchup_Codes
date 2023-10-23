@@ -5,6 +5,8 @@ import {View, StyleSheet, Text, Pressable} from 'react-native';
 import {UserProfile} from 'src/store/auth';
 import React = require('react');
 import { AntDesign, MaterialCommunityIcons } from '@expo/vector-icons';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
+import {ProfileNavigatorStackParamList} from "../@types/navigation"
 
 interface Props {
   profile?: UserProfile | null;
@@ -12,6 +14,8 @@ interface Props {
 
 const ProfileContainer: FC<Props> = ({profile}) => {
   if (!profile) return null;
+  const { navigate } =
+    useNavigation<NavigationProp< ProfileNavigatorStackParamList>>();
 
   return (
     <View style={styles.container}>
@@ -21,7 +25,11 @@ const ProfileContainer: FC<Props> = ({profile}) => {
         <Text style={styles.profileName}>{profile.name}</Text>
         <View style={styles.flexRow}>
           <Text style={styles.email}>{profile.email}</Text>
-          <MaterialCommunityIcons name="check-all" size={15} color={colors.SECONDARY} />
+          <MaterialCommunityIcons
+            name="check-all"
+            size={15}
+            color={colors.SECONDARY}
+          />
         </View>
 
         <View style={styles.flexRow}>
@@ -34,7 +42,10 @@ const ProfileContainer: FC<Props> = ({profile}) => {
         </View>
       </View>
 
-      <Pressable style={styles.settingsBtn}>
+      <Pressable
+        onPress={() => navigate("ProfileSettings")}
+        style={styles.settingsBtn}
+      >
         <AntDesign name="setting" size={22} color={colors.CONTRAST} />
       </Pressable>
     </View>
