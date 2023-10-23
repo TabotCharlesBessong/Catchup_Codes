@@ -18,6 +18,7 @@ import { upldateNotification } from "src/store/notification";
 import AppHeader from "../AppHeader";
 import React = require("react");
 import deepEqual = require("deep-equal");
+import * as ImagePicker from "expo-image-picker"
 
 interface Props {}
 
@@ -59,11 +60,19 @@ const ProfileSettings: FC<Props> = (props) => {
       if(!userInfo.name.trim()) return dispatch(upldateNotification({message:'Profile name is required',type:'error'}))
       const formData = new FormData()
       formData.append('name',userInfo.name)
+
+      if(userInfo.avatar){
+        formData.append('avatar',{
+          name:'avatar',
+          type:'image/jpeg',
+          uri:userInfo.avatar
+        })
+      }
   
       const client =  await getClient({"Content-Type":"multipart/form-data"})
       const {data} = await client.post('auth/update-profile',formData)
       dispatch(updateProfile(data.profile))
-      dispatch(upldateNotification({ message:'Profile name updated', type: "success" }));
+      dispatch(upldateNotification({ message:'Profile updated successfully', type: "success" }));
     } catch (error) {
       const errorMessage = catchAsyncError(error);
       dispatch(upldateNotification({ message: errorMessage, type: "error" }));
@@ -76,6 +85,22 @@ const ProfileSettings: FC<Props> = (props) => {
       setUserInfo({ name: profile.name, avatar: profile.avatar });
     }
   }, [profile]);
+
+  const handleImageSelect = async () => {
+    // No permissions request is necessary for launching the image library
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.All,
+      allowsEditing: true,
+      aspect: [1,1],
+      quality: 1,
+    });
+
+    // console.log(result.assets[0].uri);
+
+    if (!result.canceled) {
+      setUserInfo({...userInfo,avatar:result.assets[0].uri});
+    }
+  }
   return (
     <View style={styles.container}>
       <AppHeader title="Settings" />
@@ -86,8 +111,8 @@ const ProfileSettings: FC<Props> = (props) => {
 
       <View style={styles.settingOptionsContainer}>
         <View style={styles.avatarContainer}>
-          <AvatarField source={profile.avatar} />
-          <Pressable style={styles.paddingLeft}>
+          <AvatarField source={profile?.avatar} />
+          <Pressable onPress={handleImageSelect} style={styles.paddingLeft}>
             <Text style={styles.linkText}>Update Profile Image</Text>
           </Pressable>
         </View>

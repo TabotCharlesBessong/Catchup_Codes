@@ -21,6 +21,7 @@
     "deep-equal": "^2.2.2",
     "expo": "~49.0.12",
     "expo-document-picker": "~11.5.4",
+    "expo-image-picker": "~14.3.2",
     "expo-status-bar": "~1.6.0",
     "formik": "^2.4.5",
     "react": "18.2.0",
