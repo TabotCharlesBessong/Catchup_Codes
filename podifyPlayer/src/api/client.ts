@@ -4,11 +4,11 @@ import axios, { CreateAxiosDefaults } from "axios";
 
 const client = axios.create({
   // baseURL: "http://192.168.1.185:5000",
-  baseURL: "http://192.168.216.10:5000"
+  baseURL: "http://192.168.101.225:5000"
 });
 
 // const baseURL = "http://192.168.1.185:5000";
-const baseURL = "http://192.168.216.10:5000"
+const baseURL = "http://192.168.101.225:5000"
 
 type headers = CreateAxiosDefaults<any>["headers"];
 

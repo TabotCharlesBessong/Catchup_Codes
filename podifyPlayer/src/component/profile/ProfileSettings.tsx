@@ -1,26 +1,42 @@
+import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
+import AppButton from "@ui/AppButton";
 import AvatarField from "@ui/AvatarField";
+import { Keys, removeFromAsyncStorage } from "@utils/asyncStorage";
 import colors from "@utils/colors";
 import { FC } from "react";
-import { View, StyleSheet, Text, Pressable, TextInput } from "react-native";
-import AppButton from "@ui/AppButton";
-import { getClient } from "src/api/client";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import catchAsyncError from "src/api/catchError";
-import { upldateNotification } from "src/store/notification";
+import { getClient } from "src/api/client";
 import {
-  updateProfile,
-  updateLoggedInState,
+  getAuthState,
   updateBusyState,
+  updateLoggedInState,
+  updateProfile,
 } from "src/store/auth";
-import { useDispatch } from "react-redux";
-import { Keys, removeFromAsyncStorage } from "@utils/asyncStorage";
+import { upldateNotification } from "src/store/notification";
 import AppHeader from "../AppHeader";
 import React = require("react");
-import { AntDesign, MaterialCommunityIcons } from "@expo/vector-icons";
+import deepEqual = require("deep-equal");
 
 interface Props {}
 
+interface ProfileInfo {
+  name: string;
+  avatar?: string;
+}
+
 const ProfileSettings: FC<Props> = (props) => {
   const dispatch = useDispatch();
+  const [userInfo, setUserInfo] = React.useState<ProfileInfo>({ name: "" });
+  const { profile } = useSelector(getAuthState);
+  const [busy, setBusy] = React.useState(false)
+
+  const isSame = deepEqual(userInfo, {
+    name: profile?.name,
+    avatar: profile?.avatar,
+  });
+
   const handleLogout = async (fromAll?: boolean) => {
     dispatch(updateBusyState(true));
     try {
@@ -36,6 +52,30 @@ const ProfileSettings: FC<Props> = (props) => {
     }
     dispatch(updateBusyState(false));
   };
+
+  const handleSubmit = async () => {
+    setBusy(true)
+    try {
+      if(!userInfo.name.trim()) return dispatch(upldateNotification({message:'Profile name is required',type:'error'}))
+      const formData = new FormData()
+      formData.append('name',userInfo.name)
+  
+      const client =  await getClient({"Content-Type":"multipart/form-data"})
+      const {data} = await client.post('auth/update-profile',formData)
+      dispatch(updateProfile(data.profile))
+      dispatch(upldateNotification({ message:'Profile name updated', type: "success" }));
+    } catch (error) {
+      const errorMessage = catchAsyncError(error);
+      dispatch(upldateNotification({ message: errorMessage, type: "error" }));
+    }
+    setBusy(false)
+  }
+
+  React.useEffect(() => {
+    if (profile) {
+      setUserInfo({ name: profile.name, avatar: profile.avatar });
+    }
+  }, [profile]);
   return (
     <View style={styles.container}>
       <AppHeader title="Settings" />
@@ -46,14 +86,14 @@ const ProfileSettings: FC<Props> = (props) => {
 
       <View style={styles.settingOptionsContainer}>
         <View style={styles.avatarContainer}>
-          <AvatarField />
+          <AvatarField source={profile.avatar} />
           <Pressable style={styles.paddingLeft}>
             <Text style={styles.linkText}>Update Profile Image</Text>
           </Pressable>
         </View>
-        <TextInput style={styles.nameInput} value={"John"} />
+        <TextInput onChangeText={(text) => setUserInfo({...userInfo,name:text})} style={styles.nameInput} value={userInfo.name} />
         <View style={styles.emailConainer}>
-          <Text style={styles.email}>john@email.com</Text>
+          <Text style={styles.email}>{profile.email}</Text>
           <MaterialCommunityIcons
             name="check-all"
             size={15}
@@ -77,9 +117,11 @@ const ProfileSettings: FC<Props> = (props) => {
         </Pressable>
       </View>
 
-      <View style={styles.marginTop}>
-        <AppButton title="Update" borderRadius={7} />
-      </View>
+      {!isSame ? (
+        <View style={styles.marginTop}>
+          <AppButton busy={busy} onPress={handleSubmit} title="Update" borderRadius={7} />
+        </View>
+      ) : null}
     </View>
   );
 };
