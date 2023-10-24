@@ -6,14 +6,14 @@ import { FC } from "react";
 import { Keyboard, StyleSheet, TextInput, View, Text } from "react-native";
 import React = require("react");
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { AuthStackParamList } from "src/@types/navigation";
+import { AuthStackParamList, ProfileNavigatorStackParamList } from "src/@types/navigation";
 import client from "src/api/client";
 import colors from "@utils/colors";
 import catchAsyncError from "src/api/catchError";
 import { upldateNotification } from "src/store/notification";
 import { useDispatch } from "react-redux";
 
-type Props = NativeStackScreenProps<AuthStackParamList, "Verification">;
+type Props = NativeStackScreenProps<AuthStackParamList | ProfileNavigatorStackParamList, "Verification">;
 
 const otpFields = new Array(6).fill("");
 

@@ -19,6 +19,7 @@ import AppHeader from "../AppHeader";
 import React = require("react");
 import deepEqual = require("deep-equal");
 import * as ImagePicker from "expo-image-picker"
+import ReVerificationLink from "../ReVerificationLink";
 
 interface Props {}
 
@@ -119,11 +120,18 @@ const ProfileSettings: FC<Props> = (props) => {
         <TextInput onChangeText={(text) => setUserInfo({...userInfo,name:text})} style={styles.nameInput} value={userInfo.name} />
         <View style={styles.emailConainer}>
           <Text style={styles.email}>{profile.email}</Text>
-          <MaterialCommunityIcons
-            name="check-all"
-            size={15}
-            color={colors.SECONDARY}
-          />
+          {
+            profile?.verified ? (
+              <MaterialCommunityIcons
+                name="check-all"
+                size={15}
+                color={colors.SECONDARY}
+              />
+
+            ):(
+              <ReVerificationLink linkTitle="verify" activeAtFirst />
+            )
+          }
         </View>
       </View>
 
