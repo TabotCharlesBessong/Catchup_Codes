@@ -5,6 +5,7 @@ import Home from "@views/Home";
 import Profile from "@views/Profile";
 import Upload from "@views/Upload";
 import React = require("react");
+import ProfileNavigator from "./ProfileNavigator";
 
 const Tab = createBottomTabNavigator()
 
@@ -31,8 +32,8 @@ const AppNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Profile"
-        component={Profile}
+        name="ProfileNavigator"
+        component={ProfileNavigator}
         options={{
           tabBarIcon: (props) => {
             return (

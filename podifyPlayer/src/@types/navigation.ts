@@ -13,3 +13,11 @@ export type AuthStackParamList = {
     userInfo: NewUserResponse;
   };
 };
+
+export type ProfileNavigatorStackParamList = {
+  Profile: undefined;
+  ProfileSettings: undefined;
+  Verification: {
+    userInfo: NewUserResponse;
+  };
+};
