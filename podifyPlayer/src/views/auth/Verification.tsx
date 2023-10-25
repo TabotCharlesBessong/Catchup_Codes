@@ -1,30 +1,40 @@
 import AuthFormContainer from "@components/AuthFormContainer";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import AppButton from "@ui/AppButton";
-import AppLink from "@ui/AppLink";
 import OTPField from "@ui/OTPField";
 import { FC } from "react";
-import { Keyboard, StyleSheet, TextInput, View, Text } from "react-native";
-import React = require("react");
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { AuthStackParamList, ProfileNavigatorStackParamList } from "src/@types/navigation";
-import client from "src/api/client";
-import colors from "@utils/colors";
-import catchAsyncError from "src/api/catchError";
-import { upldateNotification } from "src/store/notification";
+import { Keyboard, StyleSheet, TextInput, View } from "react-native";
 import { useDispatch } from "react-redux";
+import {
+  AuthStackParamList,
+  ProfileNavigatorStackParamList,
+} from "src/@types/navigation";
+import catchAsyncError from "src/api/catchError";
+import client from "src/api/client";
+import ReVerificationLink from "src/component/ReVerificationLink";
+import { upldateNotification } from "src/store/notification";
+import React = require("react");
 
-type Props = NativeStackScreenProps<AuthStackParamList | ProfileNavigatorStackParamList, "Verification">;
+type Props = NativeStackScreenProps<
+  AuthStackParamList | ProfileNavigatorStackParamList,
+  "Verification"
+>;
 
 const otpFields = new Array(6).fill("");
 
-const Verification: FC<Props> = ({ route,navigation }) => {
-  const dispatch = useDispatch()
+type PossibleScreens = {
+  ProfileSettings: undefined;
+  Signin: undefined;
+};
+
+const Verification: FC<Props> = ({ route }) => {
+  const dispatch = useDispatch();
   const [otp, setOtp] = React.useState([...otpFields]);
   const [otpIndex, setOtpIndex] = React.useState(0);
   const inputRef = React.useRef<TextInput>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [countDown, setCountDown] = React.useState(60);
-  const [canSendNewOTP, setCanSendNewOTP] = React.useState(false);
+  const navigation = useNavigation<NavigationProp<PossibleScreens>>();
 
   const { userInfo } = route.params;
   inputRef.current?.focus;
@@ -66,44 +76,26 @@ const Verification: FC<Props> = ({ route,navigation }) => {
       });
       console.log(data);
       navigation.navigate("Signin");
+      dispatch(upldateNotification({ message: data.message, type: "success" }));
+
+      if (navigation.getState().routeNames.includes("Signin"))
+        navigation.navigate("Signin");
+
+      if (navigation.getState().routeNames.includes("ProfileSettings"))
+        navigation.navigate("ProfileSettings");
     } catch (error) {
       const errorMessage = catchAsyncError(error);
       dispatch(upldateNotification({ message: errorMessage, type: "error" }));
     }
     setIsSubmitting(false);
-  };
-
-  const requestOTP = async () => {
-    setCountDown(60)
-    setCanSendNewOTP(false)
-    try {
-      await client.post("/auth/re-verify-email", { userId: userInfo.id });
-    } catch (error) {
-      console.log("Requesting for new OTP", error);
-    }
+    if (navigation.getState().routeNames.includes("Signin"))
+      navigation.navigate("Signin");
   };
 
   React.useEffect(() => {
     inputRef.current?.focus();
   }, [otpIndex]);
 
-  React.useEffect(() => {
-    if (canSendNewOTP) return;
-    const interval = setInterval(() => {
-      if (countDown > 0) {
-        setCountDown((old) => old - 1);
-      }
-    }, 1000);
-
-    if (countDown === 0) {
-      setCanSendNewOTP(true);
-      clearInterval(interval);
-    }
-
-    return () => {
-      clearInterval(interval);
-    };
-  }, [canSendNewOTP]);
   return (
     <AuthFormContainer
       heading="Please check your email"
@@ -128,18 +120,7 @@ const Verification: FC<Props> = ({ route,navigation }) => {
             title="Verify Account"
           />
           <View style={styles.linkContainer}>
-            {canSendNewOTP ? (
-              <Text></Text>
-            ) : (
-              <Text style={{ color: colors.SECONDARY, marginRight: 14 }}>
-                {countDown} sec
-              </Text>
-            )}
-            <AppLink
-              active={canSendNewOTP}
-              title="resend otp"
-              onPress={requestOTP}
-            />
+            <ReVerificationLink linkTitle="Resend OTP" userId={userInfo.id} />
           </View>
         </View>
       }
@@ -166,7 +147,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: "100%",
     justifyContent: "flex-end",
-    flexDirection: "row",
   },
 });
 
