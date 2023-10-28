@@ -1,10 +1,10 @@
-
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { getFromAsyncStorage, Keys } from "@utils/asyncStorage";
 import colors from "@utils/colors";
 import { FC, useState } from "react";
 import React = require("react");
 import { View, StyleSheet, Pressable, Text } from "react-native";
+import TrackPlayer from "react-native-track-player";
 import MaterialComIcon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useDispatch } from "react-redux";
 import { AudioData, Playlist } from "src/@types/audio";
@@ -96,6 +96,13 @@ const Home: FC<Props> = (props) => {
       console.log(errorMessage);
     }
   };
+
+  React.useEffect(() => {
+    const setupPlayer = async () => {
+      await TrackPlayer.setupPlayer();
+    };
+    setupPlayer()
+  }, []);
 
   return (
     <View style={styles.container}>
